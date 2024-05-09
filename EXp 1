@@ -1,0 +1,38 @@
+1a.
+# Expt 1a: Solving Linear equations 
+# Class: III Year EKE
+# Course: 18ECS301J – Applied Programming Lab 
+# Student Name and Reg Number:
+from math import *
+def solve_linear(equation,var='x'):
+expression = equation.replace("=","-(")+")" 
+grouped = eval(expression.replace(var,'1j')) 
+return -grouped.real/grouped.imag
+solve_linear("2*x+3=x-6")
+
+
+
+1b.
+# Expt 1b: Solving Linear equations 
+# Class: III Year EKE
+# Course: 18ECS301J – Applied Programming Lab 
+# Student Name and Reg Number
+from math import *
+def solve_linear(equation,var='x'):
+expression = equation.replace("=","-(")+")" 
+grouped = eval(expression.replace(var,'1j')) 
+return -grouped.real/grouped.imag
+solve_linear("2*x +3-4*x=8*(x+6)")
+
+
+1c.
+# Expt 1c: Solving Linear equations 
+# Class: III Year EKE
+# Course: 18ECS301J – Applied Programming Lab 
+# Student Name and Reg Number:
+from math import *
+def solve_linear(equation,var='x'):
+expression = equation.replace("=","-(")+")" 
+grouped = eval(expression.replace(var,'1j')) 
+return -grouped.real/grouped.imag
+solve_linear("5*y+0.2*(23*y/5-2)+15 = 0.4*y”)
