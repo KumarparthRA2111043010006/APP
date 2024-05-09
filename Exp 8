@@ -1,104 +1,99 @@
-# Libraries ******************** import 
-math # Just to get Euler's constant import 
-matplotlib.pyplot as pplot
-import random # For bouncing
-#### Constants ###############################################################
-vin = 5.0 # Voltage in
-out_high = 3.3 # Voltage output from pin 3 when "high" 
-out_low = 0.25 # Voltage output from pin 3 when "low" 
-# (These are not simply vin and zero. See datasheet.)
-farads = 2/1000000 # Capacitance of primary capacitor, which connects both the 
-# threshold (pin 6) and discharge (pin 7) to ground. It is # fed 
-voltage through one end of the primary resistor.
-ohms = 1000000 # Resistance in ohms of the primary resistor. This connects 
-# the input voltage to pins 6 & 7 as well as the capacitor.
-sim_time = 3 # Length of time to run the entire simulation (in seconds) 
-step = sim_time / 1000 # Time increment for each simulation step (seconds) 
-button_start_time = 0.5 # At what point do we fire off the timer (seconds) 
-button_hold_time = 0.5 # How long do we press the button? (seconds) 
-bounce_time = 0.07 # How long to simulate switch bounce after button press
-# (Set to zero to turn off bounce simulation)
-bounce_prob = 0.33 # Chance that switch will bounce open during each step
-unbounce_prob = 0.5 # Chance that a bounced switch will re-close during a step 
-# Bounce time should not exceed button hold time
-if bounce_time > button_hold_time:
-bounce_time = button_hold_time
+import math
+import matplotlib.pyplot as plt
+import random
+
+# Constants
+vin = 5.0  # Voltage in
+out_high = 3.3  # Voltage output from pin 3 when "high"
+out_low = 0.25  # Voltage output from pin 3 when "low"
+farads = 2e-6  # Capacitance of primary capacitor in farads
+ohms = 1e6  # Resistance in ohms of the primary resistor
+sim_time = 3  # Simulation time in seconds
+step = sim_time / 1000  # Time increment for each simulation step in seconds
+button_start_time = 0.5  # Time to fire off the timer in seconds
+button_hold_time = 0.5  # Button press duration in seconds
+bounce_time = 0.07  # Switch bounce simulation time in seconds
+bounce_prob = 0.33  # Chance of switch bounce open during each step
+unbounce_prob = 0.5  # Chance of a bounced switch re-closing during a step
+
+# Ensure bounce time does not exceed button hold time
+bounce_time = min(bounce_time, button_hold_time)
+
+# Functions
 def update_latch(latch, trigger, threshold, vin):
-# Latch is "set" if the trigger voltage is less than 1/3 vin 
-# (But not necessarily "unset" if it's not!)
-if trigger < vin / 3: latch = True
-# Latch is "unset" if the threshold voltage is above 2/3 vin 
-# (But not necessarily "set" if it's not!)
-if threshold > vin * 2 / 3: latch =
-False
-# For voltages between these, the latch stays at whatever it was 
-return latch
-def update_capacitor(cap, farads, ohms, vin, latch, step): 
-if
-latch:
-# Charging... Time constant 
-tc = farads * ohms # Time 
-proportion
-tp = step / tc
-# Percent change from existing voltage to full voltage (vin) 
-pc = 1 - (1/math.e**tp) cap += (vin - cap) * pc else:
-# Discharging... Resistor is bypassed, so discharge is essentially immediate 
-cap = 0 # That was easy!
-return cap
-#### Set up trigger = vin latch = False vout = 
-out_low cap = 0 pre_trigger_steps = 
-round(button_start_time / step) trigger_list = 
-[trigger] * pre_trigger_steps cap_list = [cap] * 
-pre_trigger_steps out_list = [vout] * 
-pre_trigger_steps
-time_list = [i * step for i in range(pre_trigger_steps)] 
-time = button_start_time
-#### Simulate
-# Seed for bounce randomness 
-random.seed(8675309)
-# Press the button! :-) 
-trigger = 0 button_time
-= 0 while time < 
-sim_time:
-latch = update_latch(latch, trigger, cap, vin) cap = 
-update_capacitor(cap, farads, ohms, vin, latch, step) if 
-latch: vout = out_high else:
-vout = out_low 
-trigger_list.append(trigger) 
-cap_list.append(cap) 
-out_list.append(vout) 
-time_list.append(time) time += 
-step button_time += step # 
-Should we check for bounce? if 
-button_time <= bounce_time: r
-= random.randint(0, 100) / 100
-# If trigger is low (button pressed) will it bounce open? 
-if trigger == 0 and r < bounce_prob:
+    if trigger < vin / 3:
+        latch = True
+    if threshold > vin * 2 / 3:
+        latch = False
+    return latch
+
+def update_capacitor(cap, farads, ohms, vin, latch, step):
+    if latch:
+        # Charging
+        tc = farads * ohms  # Time constant
+        tp = step / tc
+        pc = 1 - math.exp(-tp)
+        cap += (vin - cap) * pc
+    else:
+        # Discharging
+        cap = 0
+    return cap
+
+# Simulation setup
 trigger = vin
-# If trigger is high (button has bounced open), will it re-close? 
-elif trigger != 0 and r < unbounce_prob:
-trigger = 0
-else:
-# If we're not bouncing, button is either pressed or unpressed
-if button_time > button_hold_time:
-trigger = vin else: trigger = 0 
-# Print constants print() print('Capacitor: ' + 
-str(farads * 1000000) + 'mf') print('Resistor: ' + 
-str(ohms/1000) + 'K') print('Vcc: +' + str(vin) + 
-'V') print()
-# Print out timing info (formula from the datasheet) 
-time_high = round(1.1 * ohms * farads, 2) 
-print('Time high: ' + str(time_high*1000) + 'ms') 
-print('Periods simulated: ' + str(len(time_list))) 
-print('Bounce time: ' + str(bounce_time*1000) + 'ms') 
-print()
-# Trigger (pin 7) voltages
-pplot.plot(time_list, trigger_list, linewidth=0.7, label='Trigger (Pin 2)') 
-# Output (Q) voltages
-pplot.plot(time_list, out_list, label='Output (Pin 3)') 
-# Capacitor voltages
-pplot.plot(time_list, cap_list, label='Capacitor') 
-pplot.xlabel('Time (Seconds)') 
-pplot.ylabel('Volts') pplot.ylim(0-vin*0.1, 
-vin*1.1) pplot.legend(loc='upper right') 
-pplot.show()
+latch = False
+vout = out_low
+cap = 0
+pre_trigger_steps = round(button_start_time / step)
+trigger_list = [trigger] * pre_trigger_steps
+cap_list = [cap] * pre_trigger_steps
+out_list = [vout] * pre_trigger_steps
+time_list = [i * step for i in range(pre_trigger_steps)]
+time = button_start_time
+
+# Seed for bounce randomness
+random.seed(8675309)
+
+# Simulation loop
+button_time = 0
+while time < sim_time:
+    latch = update_latch(latch, trigger, cap, vin)
+    cap = update_capacitor(cap, farads, ohms, vin, latch, step)
+    vout = out_high if latch else out_low
+    trigger_list.append(trigger)
+    cap_list.append(cap)
+    out_list.append(vout)
+    time_list.append(time)
+    time += step
+    button_time += step
+    
+    # Bounce simulation
+    if button_time <= bounce_time:
+        r = random.random()
+        if trigger == 0 and r < bounce_prob:
+            trigger = vin
+        elif trigger != 0 and r < unbounce_prob:
+            trigger = 0
+    else:
+        trigger = vin if button_time > button_hold_time else 0
+
+# Print constants
+print(f'Capacitor: {farads * 1e6}µF')
+print(f'Resistor: {ohms / 1e3}KΩ')
+print(f'Vcc: +{vin}V\n')
+
+# Print timing info
+time_high = round(1.1 * ohms * farads, 2)
+print(f'Time high: {time_high * 1e3}ms')
+print(f'Periods simulated: {len(time_list)}')
+print(f'Bounce time: {bounce_time * 1e3}ms\n')
+
+# Plotting
+plt.plot(time_list, trigger_list, linewidth=0.7, label='Trigger (Pin 2)')
+plt.plot(time_list, out_list, label='Output (Pin 3)')
+plt.plot(time_list, cap_list, label='Capacitor')
+plt.xlabel('Time (Seconds)')
+plt.ylabel('Volts')
+plt.ylim(-vin * 0.1, vin * 1.1)
+plt.legend(loc='upper right')
+plt.show()
