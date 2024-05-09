@@ -1,36 +1,43 @@
- #Kumar Parth (RA2111043010006)
-
-#EKE- I sec
-
-= 2a(i) 2 * 3 - 6 * 2 + 2x - 1 for x = 3
-
-poly=[ 2 ,-6,2,-1]
-
+poly = [2, -6, 2, -1]
 x = 3
+n = len(poly)
 
-n= len (poly)
+# Declaring the result
+result = 0
 
-#Declaring the result
+# Running a for loop to traverse through the list
+for i in range(n):
+    # Declaring the variable Sum
+    Sum = poly[i]
+    
+    # Running a for loop to multiply x (n-i-1) times to the current coefficient
+    for j in range(n - i - 1):
+        Sum = Sum * x
+    
+    # Adding the sum to the result
+    result = result + Sum
 
-result= 0
-
-#Running a for loop to traverse through the List
-
-for i in range (n)
-
-# Declaring the variable sum SUM =poly [i]
-
-#Running a for Loop to multiply x (n - i - 1)
-
-#timres to the current coefficient
-
-for j in range (n - i - 1) sum = sumx :
-
-#adding the sum to the Result result=result+ sum
-
-#printing the result
-
-print(result)
+# Printing the result
+print("The value of the polynomial at x =", x, "is", result)
 
 
 
+
+
+
+
+
+
+# Polynomial coefficients are given in the form {power: coefficient}
+p = {-4: 1/2, 1: 2/5, 3: 3/8}
+
+# Function to evaluate the polynomial at a given value of x
+def eval_poly_dict(poly, x):
+    sum = 0
+    for power in poly:
+        sum += poly[power] * x**power
+    return sum
+
+# Evaluate the polynomial p at x = 2
+result = eval_poly_dict(p, 2)
+print("The value of the polynomial at x = 2 is:", result)
