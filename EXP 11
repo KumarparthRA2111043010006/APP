@@ -1,11 +1,10 @@
-# Program to generate AWGN 
-# Import libraries
+
 import numpy as np 
 import random as rand
 import matplotlib.pyplot as plt 
 #enter number of symbols
 num_symbol = 8192
-#samples drawn from a random normal distribution of variance 
+
 Z=np.random.normal(0,1,size=num_symbol) 
 Power=np.mean(np.abs(Z**2))
 print(“Mean Square Power = “, Power)
