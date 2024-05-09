@@ -1,0 +1,36 @@
+ #Kumar Parth (RA2111043010006)
+
+#EKE- I sec
+
+= 2a(i) 2 * 3 - 6 * 2 + 2x - 1 for x = 3
+
+poly=[ 2 ,-6,2,-1]
+
+x = 3
+
+n= len (poly)
+
+#Declaring the result
+
+result= 0
+
+#Running a for loop to traverse through the List
+
+for i in range (n)
+
+# Declaring the variable sum SUM =poly [i]
+
+#Running a for Loop to multiply x (n - i - 1)
+
+#timres to the current coefficient
+
+for j in range (n - i - 1) sum = sumx :
+
+#adding the sum to the Result result=result+ sum
+
+#printing the result
+
+print(result)
+
+
+
