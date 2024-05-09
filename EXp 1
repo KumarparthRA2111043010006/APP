@@ -1,14 +1,11 @@
 1a.
-# Expt 1a: Solving Linear equations 
-# Class: III Year EKE
-# Course: 18ECS301J – Applied Programming Lab 
-# Student Name and Reg Number:
 from math import *
 def solve_linear(equation,var='x'):
-expression = equation.replace("=","-(")+")" 
-grouped = eval(expression.replace(var,'1j')) 
-return -grouped.real/grouped.imag
+   expression = equation.replace("=","-(")+")" 
+   grouped = eval(expression.replace(var,'1j')) 
+   return -grouped.real/grouped.imag
 solve_linear("2*x+3=x-6")
+
 
 
 
